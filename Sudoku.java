@@ -65,8 +65,8 @@ public void start(Stage primaryStage){
     }
     Button b = new Button("calculate");
     b.setOnMouseClicked(e -> { 
-        sudokuBoard = new Board(board);
-        recurseSolve(0,0);});
+        //sudokuBoard = new Board(board);
+        if(isSolvable()) recurseSolve(0,0);});
     Button c = new Button("clear");
     c.setOnMouseClicked(e -> {buttonClearer();});
     cont.getChildren().addAll(b,c);
@@ -103,6 +103,20 @@ public static void buttonClearer(){
     b.setDisable(false);
     sudokuBoard = new Board(board);
     controller = false;
+}
+public static boolean isSolvable(){
+    boolean temp = false;
+    boolean isEmpty = true;
+    for(int i = 0; i < 9; i++){
+        for(int j = 0; j < 9; j++){
+           if(board[i][j] != 0){
+                isEmpty = false;
+                if(Rules.checkRules(board[i][j], new Index(i,j), new Board(board)))
+                    temp = true;
+           }      
+        }
+    }
+    return (temp || isEmpty);
 }
 public static int tracker = 0;
 public static void recurseSolve(int row, int col){
