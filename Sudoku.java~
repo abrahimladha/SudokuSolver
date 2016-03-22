@@ -15,7 +15,7 @@ public static Button[] buttons = new Button[81];
 public static boolean controller = false;
 public static void main(String[] args) throws Exception{ launch(args);}
 public void start(Stage primaryStage){
-
+    Scanner scan = new Scanner(System.in);
 	board = new int[9][9];
     for(int i = 0; i < 9; i++){
         for(int j = 0; j < 9; j++){           
@@ -107,19 +107,19 @@ public static void buttonClearer(){
 }
 //will determine if board is solvable before recursing
 public static boolean isSolvable(){
-    boolean isSolvable = false;
+    boolean temp = false;
     boolean isEmpty = true;
     for(int i = 0; i < 9; i++){
         for(int j = 0; j < 9; j++){
            if(board[i][j] != 0){
                 isEmpty = false;
                 if(Rules.checkRules(board[i][j], new Index(i,j), new Board(board)))
-                    isSolvable = true;
+                    temp = true;
            }      
         }
     }
     //return true if no collisions or its empty
-    return (isSolvable || isEmpty);
+    return (temp || isEmpty);
 }
 //the backtracking recursive method
 public static void recurseSolve(int row, int col){
@@ -151,43 +151,49 @@ public static void recurseSolve(int row, int col){
         }
     }
 }
-//check if it conflicts its row and column and box
-public static boolean checkRules(int element, Index index, Board b){
-	int[][] board = b.getBoard();
-    //checking column
-    for(int i=0; i < board.length; i++){
-		if(i == index.getCol())
-			continue;
-		else{
-			if(element == board[index.getRow()][i])
-				return false;
-		}
-	}
-    //checking row
-	for(int i=0; i < board.length; i++){
-		if(i == index.getRow())
-			continue;
-        else{
-			if(element == board[i][index.getCol()])
-				return false;
-        }
-    }
-    //checking box
-	int boxSize = b.getBoxSize();
-	int boxRow = (index.getRow() / boxSize)*boxSize;
-	int boxCol = (index.getCol() / boxSize)*boxSize;
-	for(int i = boxRow; i < boxRow + boxSize; i++){
-		for(int j = boxCol; j < boxCol + boxSize; j++){
-			if((i == index.getRow()) && (j == index.getCol()))
+    //check if it conflicts its row and column
+	public static boolean checkRowCol(int element, Index index, Board b){
+		int[][] board = b.getBoard();
+		for(int i=0; i < board.length; i++){
+			if(i == index.getCol())
 				continue;
 			else{
-				if(element == board[i][j])
+				if(element == board[index.getRow()][i])
 					return false;
 			}
+		}
+		for(int i=0; i < board.length; i++){
+			if(i == index.getRow())
+				continue;
+			else{
+				if(element == board[i][index.getCol()])
+					return false;
+            }
         }
+		return true;
+    }
+    //check if it conflicts its box  
+	public static boolean checkBox(int element, Index index, Board b){
+		int[][] board = b.getBoard();
+		int boxSize = b.getBoxSize();
+		int boxRow = (index.getRow() / boxSize)*boxSize;
+		int boxCol = (index.getCol() / boxSize)*boxSize;
+		for(int i=boxRow; i < boxRow + boxSize; i++){
+			for(int j=boxCol; j < boxCol + boxSize; j++){
+				if((i == index.getRow()) && (j == index.getCol()))
+					continue;
+				else{
+					if(element == board[i][j])
+						return false;
+				}
+			}
+		}
+		return true;
 	}
-	return true;
-}
+    //do both
+	public static boolean checkRules(int element, Index index, Board b){
+		return (checkBox(element, index, b) && checkRowCol(element, index, b));
+	}
 }
 class Index{
     private int row;
@@ -201,6 +207,9 @@ class Index{
     }
     public int getCol(){
         return col;
+    }
+    public boolean equals(Index other){
+        return ((row == other.getRow()) && (col == other.getCol()));
     }
 }
 class Board{
@@ -218,3 +227,6 @@ class Board{
 		return _board;
 	}
 }
+//class Rules{
+
+//}
