@@ -8,8 +8,8 @@ import javafx.scene.layout.*;
 public class Sudoku extends Application {
 public static final int[] NUMBERS = {1, 2, 3, 4, 5, 6, 7, 8, 9};
 public static int[][] board;
-public static Button b = new Button("calculate");
-public static Button c = new Button("clear");
+public static Button b = new Button("SOLVE");
+public static Button c = new Button("CLEAR");
 public static Board sudokuBoard;
 public static Button[] buttons = new Button[81];
 public static boolean controller = false;
@@ -55,7 +55,7 @@ public void start(Stage primaryStage){
     two.getChildren().addAll(vboxes[3],vboxes[4],vboxes[5]);                     
     three.getChildren().addAll(vboxes[6],vboxes[7],vboxes[8]);                     
     //separate the buttons from the board
-    HBox buttonBox = new HBox(16);
+    HBox buttonBox = new HBox(2);
     
     VBox totalboard = new VBox(8);
     totalboard.getChildren().addAll(one,two,three);
@@ -70,12 +70,42 @@ public void start(Stage primaryStage){
     });
     //handler for the clear button
     c.setOnMouseClicked(e -> {buttonClearer();});
-    
-    buttonBox.getChildren().addAll(b,c);
+    Button easy = new Button("EASY");
+    Button medium = new Button("MEDIUM");
+    Button hard = new Button("HARD");
+    hard.setOnAction(e -> {chooseBoard("h");});
+    buttonBox.getChildren().addAll(b,c,easy,medium,hard);
     totalboard.getChildren().add(buttonBox);
     Scene s = new Scene(totalboard);
     primaryStage.setScene(s);
     primaryStage.show();
+}
+public static void chooseBoard(String s){
+    
+    if(s.equals("e")){
+    
+    }
+    else if(s.equals("m")){
+    
+    }
+    else if(s.equals("h")){
+    int trash;
+    try{
+        Scanner scan = new Scanner(new File("./hard.txt"));
+        int a = (int)(Math.random()*50);
+        for(int x = 0; x < a*81; x++)
+            trash = scan.nextInt();
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                board[i][j] = scan.nextInt();   
+            }
+        }
+    }
+    catch (FileNotFoundException e){
+    }
+    }
+    
+    buttonShower();
 }
 public static void buttonDoer(int n){
     int x = (int)(n/9);
@@ -90,7 +120,7 @@ public static void buttonShower(){
         for(int j = 0; j < 9; j++)
             buttons[9*i + j].setText(board[i][j]+""); 
     }
-    b.setDisable(true);
+    //b.setDisable(true);
 }
 //sets the buttons and board back to all zeroes.
 public static void buttonClearer(){
@@ -115,6 +145,7 @@ public static boolean isSolvable(){
                 isEmpty = false;
                 if(Rules.checkRules(board[i][j], new Index(i,j), new Board(board)))
                     isSolvable = true;
+                else return false;
            }      
         }
     }
@@ -128,6 +159,7 @@ public static void recurseSolve(int row, int col){
         if(row > 8){
             controller = true;
             buttonShower();
+            b.setDisable(true);
         }
 	    //if the square is empty, do I go right a square or down a row
         else if(board[row][col] != 0){
@@ -147,7 +179,7 @@ public static void recurseSolve(int row, int col){
 		    		    recurseSolve(row, col+1);
 		        }
 	        }
-		    board[row][col]=0;
+		    board[row][col]=0;                      
         }
     }
 }
@@ -217,4 +249,12 @@ class Board{
 	public int[][] getBoard(){
 		return _board;
 	}
+    public void printboard(){
+        for(int i = 0; i < 9; i++){
+            for(int j = 0; j < 9; j++){
+                System.out.print(_board[i][j]);
+            }
+            System.out.println();
+        }
+    }
 }
