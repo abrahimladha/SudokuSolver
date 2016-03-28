@@ -71,7 +71,9 @@ public void start(Stage primaryStage){
     //handler for the clear button
     c.setOnMouseClicked(e -> {buttonClearer();});
     Button easy = new Button("EASY");
+    easy.setOnAction(e -> {chooseBoard("e");});
     Button medium = new Button("MEDIUM");
+    medium.setOnAction(e -> {chooseBoard("m");});
     Button hard = new Button("HARD");
     hard.setOnAction(e -> {chooseBoard("h");});
     buttonBox.getChildren().addAll(b,c,easy,medium,hard);
@@ -81,17 +83,19 @@ public void start(Stage primaryStage){
     primaryStage.show();
 }
 public static void chooseBoard(String s){
-    
+    String file = "";
     if(s.equals("e")){
-    
+        file = "./easy.txt";
     }
     else if(s.equals("m")){
-    
+        file = "./medium.txt";
     }
     else if(s.equals("h")){
+        file = "./hard.txt";
+    }    
     int trash;
     try{
-        Scanner scan = new Scanner(new File("./hard.txt"));
+        Scanner scan = new Scanner(new File(file));
         int a = (int)(Math.random()*50);
         for(int x = 0; x < a*81; x++)
             trash = scan.nextInt();
@@ -103,8 +107,6 @@ public static void chooseBoard(String s){
     }
     catch (FileNotFoundException e){
     }
-    }
-    
     buttonShower();
 }
 public static void buttonDoer(int n){
